@@ -9,17 +9,6 @@ export async function loginWithDiscord<T>(
   supabase: SupabaseClient
 ): Promise<User | null> {
   return new Promise<User | null>(async (resolve, reject) => {
-    if (localStorage.getItem("data")) {
-      const query = JSON.parse(localStorage.getItem("data")!);
-      let authres = await supabase.auth.setSession({
-        ...query,
-      });
-      if (!authres.error) {
-        resolve(authres.data.user);
-        return;
-      }
-    }
-
     const res = await supabase.auth.signInWithOAuth({
       provider: "discord",
       options: {
@@ -28,6 +17,16 @@ export async function loginWithDiscord<T>(
       },
     });
 
+    if (localStorage.getItem("data")) {
+      const query = JSON.parse(localStorage.getItem("data")!);
+      const ses = await supabase.auth.setSession(query);
+
+      if (!ses.error) {
+        resolve(ses.data.user);
+        return;
+      }
+    }
+
     const redirectUrl = res.data.url;
     console.log(`Please login at: ${redirectUrl}`);
 
@@ -35,12 +34,19 @@ export async function loginWithDiscord<T>(
     const port = 9001;
 
     app.get("/login", async (req, res) => {
-      if (req.query.access_token) {
-        localStorage.setItem("data", JSON.stringify(req.query));
+      if (req.query.code) {
+        const ses = await supabase.auth.exchangeCodeForSession(
+          req.query.code as any
+        );
+
         let authres = await supabase.auth.setSession({
-          access_token: req.query.access_token as string,
-          refresh_token: req.query.refresh_token as string,
+          ...ses.data.session!,
         });
+        localStorage.setItem(
+          "data",
+          JSON.stringify((await supabase.auth.getSession()).data.session)
+        );
+
         if (!authres.error) {
           resolve(authres.data.user);
           res.send("OK!");
@@ -54,12 +60,12 @@ export async function loginWithDiscord<T>(
       }
 
       res.send(`
-    <script>
-    const hash = window.location.hash;
-    if(hash.length > 0 && hash.startsWith("#")) {
-      window.location.replace(window.location.href.replace('#','?'));
-    }
-  </script>`);
+  //   <script>
+  //   const hash = window.location.hash;
+  //   if(hash.length > 0 && hash.startsWith("#")) {
+  //     window.location.replace(window.location.href.replace('#','?'));
+  //   }
+  // </script>`);
     });
 
     let server = app.listen(port, () => {});

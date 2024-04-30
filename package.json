@@ -2,8 +2,7 @@
   "name": "hook-login",
   "module": "index.ts",
   "type": "module",
-  "version": "1.0.1",
-
+  "version": "1.0.3",
   "peerDependencies": {
     "typescript": "^5.0.0"
   },
@@ -16,6 +15,6 @@
     "tsx": "^4.7.3"
   },
   "scripts": {
-    "dev": "tsx watch index.ts"
+    "dev": "tsx watch test.ts"
   }
 }
