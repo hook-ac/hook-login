@@ -77,6 +77,5 @@ export async function loginGuest(supabase: SupabaseClient) {
     email: "sample@hook.ac",
     password: "password",
   });
-  console.log(res);
   return res.data.user;
 }
