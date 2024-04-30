@@ -1,19 +1,13 @@
-import { createClient, type User } from "@supabase/supabase-js";
+import { SupabaseClient, createClient, type User } from "@supabase/supabase-js";
 import express from "express";
 import { LocalStorage } from "node-localstorage";
 import os from "os";
 
 export const localStorage = new LocalStorage(os.homedir() + "/profile");
 
-export async function loginWithDiscord<T>({
-  supabaseUrl,
-  key,
-}: {
-  supabaseUrl: string;
-  key: string;
-}): Promise<User | null> {
-  let supabase = createClient<T>(supabaseUrl, key);
-
+export async function loginWithDiscord<T>(
+  supabase: SupabaseClient
+): Promise<User | null> {
   return new Promise<User | null>(async (resolve, reject) => {
     if (localStorage.getItem("data")) {
       const query = JSON.parse(localStorage.getItem("data")!);
