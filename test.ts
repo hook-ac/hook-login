@@ -1,4 +1,4 @@
-import { loginWithDiscord } from ".";
+import { loginGuest, loginWithDiscord } from ".";
 import { createClient } from "@supabase/supabase-js";
 
 const supabaseUrl = "https://bogjwtpfbwbchxteoxlo.supabase.co";
@@ -16,6 +16,9 @@ export const supabase = createClient(
 );
 
 let a = 1;
+loginGuest(supabase).then((e) => {
+  console.log(e);
+});
 loginWithDiscord(supabase).then((user) => {
   console.log(user);
 });

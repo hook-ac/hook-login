@@ -71,3 +71,12 @@ export async function loginWithDiscord<T>(
     let server = app.listen(port, () => {});
   });
 }
+
+export async function loginGuest(supabase: SupabaseClient) {
+  const res = await supabase.auth.signInWithPassword({
+    email: "sample@hook.ac",
+    password: "password",
+  });
+  console.log(res);
+  return res.data.user;
+}
