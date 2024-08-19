@@ -1,8 +1,8 @@
-import { SupabaseClient, createClient, type User } from "@supabase/supabase-js";
+import { SupabaseClient, type User } from "@supabase/supabase-js";
+import child_process from "child_process";
 import express from "express";
 import { LocalStorage } from "node-localstorage";
 import os from "os";
-import child_process from "child_process";
 export const localStorage = new LocalStorage(os.homedir() + "/profile");
 
 export async function loginWithDiscord<T>(
@@ -28,7 +28,7 @@ export async function loginWithDiscord<T>(
     }
 
     const redirectUrl = res.data.url;
-    child_process.exec(`start ${redirectUrl}`);
+    child_process.exec(`start "" "${redirectUrl}"`);
 
     const app = express();
     const port = 9001;
@@ -60,12 +60,12 @@ export async function loginWithDiscord<T>(
       }
 
       res.send(`
-  //   <script>
-  //   const hash = window.location.hash;
-  //   if(hash.length > 0 && hash.startsWith("#")) {
-  //     window.location.replace(window.location.href.replace('#','?'));
-  //   }
-  // </script>`);
+     <script>
+     const hash = window.location.hash;
+     if(hash.length > 0 && hash.startsWith("#")) {
+       window.location.replace(window.location.href.replace('#','?'));
+     }
+   </script>`);
     });
 
     let server = app.listen(port, () => {});
